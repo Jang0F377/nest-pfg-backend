@@ -1,0 +1,45 @@
+version: '3.5'
+
+networks:
+  pfg-network:
+    driver: bridge
+
+volumes:
+  pfg-mongo-data:
+
+services:
+  pfg-backend:
+    image: pfg-backend:latest
+    container_name: pfg-backend
+    depends_on:
+      - pfg-mongodb
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    command: npm run start:dev
+    environment:
+      - NODE_ENV=production
+    networks:
+      - pfg-network
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+
+  pfg-mongodb:
+    image: mongo:4.4.6
+    container_name: pfg-mongodb
+    volumes:
+      - pfg-mongo-data:/data/db
+    networks:
+      - pfg-network
+    ports:
+      - ${MONGO_PORT}:${MONGO_PORT}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    restart: unless-stopped
