@@ -1,26 +1,46 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { SeshDto } from './dto/sesh.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Sesh } from './model/sesh.model';
 import { Model } from 'mongoose';
 import { UserService } from '../user/user.service';
+import { SeshRepository } from './repositories/sesh.repository';
 
 @Injectable()
 export class SeshService {
   constructor(
     @InjectModel(Sesh.name) private seshModel: Model<Sesh>,
-    private userService: UserService,
+    @Inject(SeshRepository) private seshRepository: SeshRepository,
   ) {}
 
+  async getSesh(id: string): Promise<SeshDto> {
+    const sesh = await this.seshModel.findById(id);
+
+    if (!sesh) {
+      throw new NotFoundException('Sesh not found by Id');
+    }
+
+    return sesh;
+  }
+
   async createNewSesh(token: string, sesh: SeshDto): Promise<SeshDto> {
-    const { _id } = await this.userService.returnCurrentUser(token);
     try {
-      sesh.sentFrom = _id;
-      const newSesh = await this.seshModel.create(sesh);
-      // Handle putting sesh into upcomingSeshes for recipients and creator
-      return newSesh;
-    } catch (err) {
-      throw new BadRequestException('Sesh cannot be created. please try again');
+      const finalizedSesh = await this.seshRepository.finalizeSeshDetails(
+        token,
+        sesh,
+      );
+
+      return finalizedSesh;
+    } catch {
+      throw new UnprocessableEntityException('Cannot create sesh right now.');
     }
   }
+
+  async updateSesh() {}
 }

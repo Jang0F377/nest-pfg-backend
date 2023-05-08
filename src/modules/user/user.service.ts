@@ -9,14 +9,19 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './model/user.model';
-import { Model } from 'mongoose';
+import { Model, ProjectionType } from 'mongoose';
 import { UserWithPassword } from './model/user-with-password.model';
 import { JwtService } from 'src/services/jwt/jwt.service';
 import { PartialUserDto, UserDto } from './dto/user.dto';
 import { UserProfile, Credentials } from 'src/types';
 import { UserWithPasswordDto } from './dto/user-with-password.dto';
-import { ROLES } from 'src/constants/user';
+import {
+  CONSTANT_PROJECTION,
+  ROLES,
+  USER_SESH_PROJECTION,
+} from 'src/constants/user';
 import { PasswordHasherService } from 'src/services/password-hasher/password-hasher.service';
+import { SeshDto } from '../sesh/dto/sesh.dto';
 
 @Injectable()
 export class UserService {
@@ -28,10 +33,19 @@ export class UserService {
     private hasherService: PasswordHasherService,
   ) {}
 
-  async returnCurrentUser(token: string): Promise<UserDto> {
+  async returnCurrentUser(
+    token: string,
+    projections?: Array<string>,
+  ): Promise<UserDto> {
+    let constantProjections = CONSTANT_PROJECTION;
     const parseToken = await this.jwtService.validateToken(token);
     const sub = this.grabIdFromSub(parseToken.sub);
-    const itsMe = await this.userModel.findById(sub, '-role').exec();
+    if (projections) {
+      constantProjections = constantProjections.concat(projections);
+    }
+    const itsMe = await this.userModel
+      .findById(sub, constantProjections)
+      .exec();
 
     if (!itsMe) {
       throw new NotFoundException('User not found from token sub');
@@ -42,6 +56,22 @@ export class UserService {
 
   async returnAllUsers(): Promise<UserDto[]> {
     return await this.userModel.find().exec();
+  }
+
+  async getUserByEmail(
+    email: string,
+    projections?: Array<string>,
+  ): Promise<UserDto> {
+    let user: UserDto;
+    if (projections) {
+      user = await this.userModel.findOne({ email: email }, projections);
+    } else {
+      user = await this.userModel.findOne({ email: email });
+    }
+    if (!user) {
+      throw new NotFoundException(`User not found by email: ${email}`);
+    }
+    return user;
   }
 
   async returnSpecificUser(id: string): Promise<UserDto> {
@@ -88,6 +118,41 @@ export class UserService {
     const { _id } = saveUserToDb;
     const userObject = Object.assign({}, { ...saveThisUser, _id: _id });
     return await this.userModel.create(userObject);
+  }
+
+  async addSeshtoUsersUndecidedPool(
+    id: string,
+    sesh: SeshDto,
+  ): Promise<UserDto> {
+    try {
+      return await this.userModel.findByIdAndUpdate(
+        id,
+        { $push: { upcomingUndecidedSeshes: sesh } },
+        { new: true, projection: USER_SESH_PROJECTION.concat(['-role']) },
+      );
+    } catch (err) {
+      throw new BadRequestException('Unable to add sesh to user pool');
+    }
+  }
+
+  async addSeshToUsersAcceptedPool(id: string, sesh: SeshDto) {
+    return await this.userModel.findByIdAndUpdate(
+      id,
+      {
+        $push: { upcomingAcceptedSeshes: sesh },
+      },
+      { new: true },
+    );
+  }
+
+  async removeSeshFromUsersPool(id: string, sesh: SeshDto) {
+    return await this.userModel.findByIdAndUpdate(
+      id,
+      {
+        $pull: { upcomingUndecidedSeshes: sesh },
+      },
+      { new: true },
+    );
   }
 
   async updateCurrentUser(

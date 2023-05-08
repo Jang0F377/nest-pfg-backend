@@ -15,7 +15,7 @@ export class SeshDto {
   proposedTime: string;
 
   @IsNotEmpty({ message: 'recipients cannot be empty' })
-  recipients: Array<UserDto>;
+  recipients: Array<string>;
 
   @IsOptional()
   @IsNotEmpty({ message: 'sentFrom cannot be empty' })
@@ -28,6 +28,8 @@ export class SeshDto {
   usersConfirmed?: Array<UserDto>;
 
   usersDeclined?: Array<UserDto>;
+
+  usersUnconfirmed?: Array<UserDto>;
 }
 
 export class PartialSeshDto extends PartialType(SeshDto) {}

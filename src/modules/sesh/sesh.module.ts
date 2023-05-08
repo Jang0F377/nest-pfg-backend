@@ -12,6 +12,7 @@ import { UserService } from '../user/user.service';
 import { JwtService } from 'src/services/jwt/jwt.service';
 import { PasswordHasherService } from 'src/services/password-hasher/password-hasher.service';
 import { UserModule } from '../user/user.module';
+import { SeshRepository } from './repositories/sesh.repository';
 
 @Module({
   imports: [
@@ -31,7 +32,13 @@ import { UserModule } from '../user/user.module';
     ]),
     UserModule,
   ],
-  providers: [SeshService, UserService, JwtService, PasswordHasherService],
+  providers: [
+    SeshService,
+    SeshRepository,
+    UserService,
+    JwtService,
+    PasswordHasherService,
+  ],
   controllers: [SeshController],
 })
 export class SeshModule {}

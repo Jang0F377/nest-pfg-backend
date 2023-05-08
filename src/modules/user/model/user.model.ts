@@ -7,6 +7,7 @@ import { Sesh } from 'src/modules/sesh/model/sesh.model';
 export class User extends Document {
   @Prop({
     required: true,
+    index: true,
   })
   email: string;
 
@@ -59,3 +60,4 @@ export class User extends Document {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+UserSchema.index({ email: 1 }, { unique: true });

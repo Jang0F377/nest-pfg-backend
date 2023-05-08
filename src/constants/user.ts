@@ -7,3 +7,14 @@ export enum ROLES {
   ADMIN = 'admin',
   SUPER_ADMIN = 'superAdmin',
 }
+
+export const USER_SESH_PROJECTION = [
+  '-upcomingAcceptedSeshes',
+  '-upcomingDeclinedSeshes',
+  '-upcomingUndecidedSeshes',
+  '-recentSeshes',
+  '-favoriteGames',
+  '-supporter',
+];
+
+export const CONSTANT_PROJECTION = ['-role'];

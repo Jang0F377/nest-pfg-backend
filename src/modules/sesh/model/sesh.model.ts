@@ -19,7 +19,7 @@ export class Sesh extends Document {
   proposedTime: string;
 
   @Prop({ required: true, type: Array })
-  recipients: Array<User>;
+  recipients: Array<string>;
 
   @Prop()
   sentFrom: string;
@@ -35,6 +35,9 @@ export class Sesh extends Document {
 
   @Prop({ required: false })
   usersDeclined?: Array<User>;
+
+  @Prop({ required: false })
+  usersUnconfirmed?: Array<User>;
 }
 
 export const SeshSchema = SchemaFactory.createForClass(Sesh);
