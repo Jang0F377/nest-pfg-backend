@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Headers, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { SeshService } from './sesh.service';
 import { Public } from 'src/common/decorators/public.decorator';
 import { SeshDto } from './dto/sesh.dto';
@@ -22,5 +31,15 @@ export class SeshController {
     @Body() sesh: SeshDto,
   ): Promise<SeshDto> {
     return this.seshService.createNewSesh(token, sesh);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post(':id/accept')
+  @Role(ROLES.USER, ROLES.ADMIN)
+  rsvpForSesh(
+    @Headers('token') token: string,
+    @Param('id') seshId: string,
+  ): Promise<any> {
+    return this.seshService.rsvpForSesh(token, seshId);
   }
 }

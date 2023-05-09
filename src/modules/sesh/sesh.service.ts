@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Inject,
   Injectable,
   NotFoundException,
@@ -9,14 +8,16 @@ import { SeshDto } from './dto/sesh.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Sesh } from './model/sesh.model';
 import { Model } from 'mongoose';
-import { UserService } from '../user/user.service';
 import { SeshRepository } from './repositories/sesh.repository';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { SESH_EVENTS, SeshAcceptedEvent } from 'src/constants/events';
 
 @Injectable()
 export class SeshService {
   constructor(
     @InjectModel(Sesh.name) private seshModel: Model<Sesh>,
     @Inject(SeshRepository) private seshRepository: SeshRepository,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async getSesh(id: string): Promise<SeshDto> {
@@ -42,5 +43,13 @@ export class SeshService {
     }
   }
 
-  async updateSesh() {}
+  async rsvpForSesh(token: string, seshId: string): Promise<void> {
+    const acceptedEvent = new SeshAcceptedEvent(token, seshId);
+
+    await this.eventEmitter.emitAsync(
+      SESH_EVENTS.USER_CONFIRMED,
+      acceptedEvent,
+    );
+    return;
+  }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ConfigServiceType } from 'src/constants/types';
+import { ConfigServiceType } from 'src/constants/types/environment';
 import { genSalt, hash } from 'bcryptjs';
 import { compare } from 'bcryptjs';
 

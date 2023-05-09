@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ConfigServiceType, DbConfig } from 'src/constants/types';
+import { ConfigServiceType, DbConfig } from 'src/constants/types/environment';
 
 @Injectable()
 export class DbUriService {

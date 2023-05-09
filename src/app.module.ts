@@ -13,6 +13,8 @@ import { PasswordHasherModule } from './services/password-hasher/password-hasher
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './common/guards/auth.guard';
 import { JwtService } from './services/jwt/jwt.service';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ListenersModule } from './services/listeners/listeners.module';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { JwtService } from './services/jwt/jwt.service';
       cache: true,
     }),
     DbUriModule,
+    EventEmitterModule.forRoot(),
     MongooseModule.forRootAsync({
       imports: [DbUriModule],
       inject: [DbUriService],
@@ -33,6 +36,7 @@ import { JwtService } from './services/jwt/jwt.service';
     UserModule,
     SeshModule,
     PasswordHasherModule,
+    ListenersModule,
   ],
   controllers: [HealthcheckController],
   providers: [JwtService, { provide: APP_GUARD, useClass: AuthGuard }],

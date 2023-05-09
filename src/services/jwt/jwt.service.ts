@@ -1,6 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AppSecretsConfig, ConfigServiceType } from 'src/constants/types';
+import {
+  AppSecretsConfig,
+  ConfigServiceType,
+} from 'src/constants/types/environment';
 import { UserProfile } from 'src/types';
 import { promisify } from 'util';
 
