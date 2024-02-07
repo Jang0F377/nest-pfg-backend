@@ -1,15 +1,16 @@
 import {
   BadRequestException,
-  HttpException,
   HttpStatus,
   Injectable,
+  NotAcceptableException,
   NotFoundException,
   PreconditionFailedException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './model/user.model';
-import { Model, ProjectionType } from 'mongoose';
+import mongoose, { Model, ProjectionType } from 'mongoose';
 import { UserWithPassword } from './model/user-with-password.model';
 import { JwtService } from 'src/services/jwt/jwt.service';
 import { PartialUserDto, UserDto } from './dto/user.dto';
@@ -45,6 +46,11 @@ export class UserService {
     }
     const itsMe = await this.userModel
       .findById(sub, constantProjections)
+      .populate({
+        path: 'upcomingUndecidedSeshes upcomingAcceptedSeshes',
+        select:
+          'game proposedDay proposedTime recipients sentFrom usersConfirmed usersDeclined usersUnconfirmed',
+      })
       .exec();
 
     if (!itsMe) {
@@ -106,6 +112,11 @@ export class UserService {
       password: '',
       role: ROLES.USER,
     };
+
+    if (saveThisUser.email === 'mjgarrett7092@gmail.com') {
+      saveThisUser.role = ROLES.SUPER_ADMIN;
+    }
+
     const hashedPwd = await this.hasherService.hashPassword(
       credentials.password,
     );
@@ -121,13 +132,13 @@ export class UserService {
   }
 
   async addSeshtoUsersUndecidedPool(
-    id: string,
-    sesh: SeshDto,
+    id: mongoose.Schema.Types.ObjectId,
+    seshId: mongoose.Schema.Types.ObjectId,
   ): Promise<UserDto> {
     try {
       return await this.userModel.findByIdAndUpdate(
         id,
-        { $push: { upcomingUndecidedSeshes: sesh } },
+        { $push: { upcomingUndecidedSeshes: seshId } },
         { new: true, projection: USER_SESH_PROJECTION.concat(['-role']) },
       );
     } catch (err) {
@@ -135,17 +146,46 @@ export class UserService {
     }
   }
 
-  async addSeshToUsersAcceptedPool(id: string, sesh: SeshDto) {
+  async addSeshToUsersAcceptedPool(
+    id: mongoose.Schema.Types.ObjectId,
+    seshId: mongoose.Schema.Types.ObjectId,
+  ) {
     return await this.userModel.findByIdAndUpdate(
       id,
       {
-        $push: { upcomingAcceptedSeshes: sesh },
+        $push: { upcomingAcceptedSeshes: seshId },
       },
       { new: true },
     );
   }
 
-  async removeSeshFromUsersPool(id: string, sesh: SeshDto) {
+  async moveFromUndecidedToAccepted(
+    id: mongoose.Schema.Types.ObjectId,
+    sesh: string,
+  ) {
+    const seshId = new mongoose.Types.ObjectId(sesh);
+    try {
+      return await this.userModel.findByIdAndUpdate(
+        id,
+        {
+          $pull: {
+            upcomingUndecidedSeshes: seshId,
+          },
+          $push: {
+            upcomingAcceptedSeshes: seshId,
+          },
+        },
+        { new: true },
+      );
+    } catch (err) {
+      throw new UnprocessableEntityException(err);
+    }
+  }
+
+  async removeSeshFromUsersPool(
+    id: mongoose.Schema.Types.ObjectId,
+    sesh: SeshDto,
+  ) {
     return await this.userModel.findByIdAndUpdate(
       id,
       {
@@ -155,23 +195,27 @@ export class UserService {
     );
   }
 
-  async updateCurrentUser(
+  async updateFavoriteGames(
     token: string,
-    updatedUser: PartialUserDto,
+    favoriteGames: PartialUserDto,
   ): Promise<UserDto> {
-    const { _id, role } = await this.returnCurrentUser(token);
-    /* ROLE CHECK */
-    if (role !== ROLES.ADMIN || ROLES.SUPER_ADMIN) {
-      /* If not (super)admin these changes are not allowed */
-      if (updatedUser.role || updatedUser.supporter) {
-        throw new UnauthorizedException(
-          'You are not authorized to make these changes!',
-        );
-      }
+    const { _id } = await this.returnCurrentUser(token);
+
+    if (!favoriteGames.favoriteGames) {
+      throw new NotAcceptableException();
     }
+    // /* ROLE CHECK */
+    // if (role !== ROLES.ADMIN || ROLES.SUPER_ADMIN) {
+    //   /* If not (super)admin these changes are not allowed */
+    //   if (updatedUser.role || updatedUser.supporter) {
+    //     throw new UnauthorizedException(
+    //       'You are not authorized to make these changes!',
+    //     );
+    //   }
+    // }
     const updated = await this.userModel.findByIdAndUpdate(
       _id,
-      { $set: updatedUser },
+      { $set: { favoriteGames: favoriteGames } },
       { new: true },
     );
     return updated;
@@ -206,10 +250,7 @@ export class UserService {
       email: credentials.email,
     });
     if (!findUser) {
-      throw new HttpException(
-        `Email: ${credentials.email} is not found`,
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException(`Email: ${credentials.email} is not found`);
     }
     const { password } = findUser;
     const theyMatch = await this.hasherService.comparePasswords(

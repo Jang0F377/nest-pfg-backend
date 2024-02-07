@@ -25,7 +25,7 @@ export class SeshController {
   }
 
   @Post('create')
-  @Role(ROLES.USER, ROLES.ADMIN)
+  @Role(ROLES.USER, ROLES.SUPER_ADMIN)
   createNewSesh(
     @Headers('token') token: string,
     @Body() sesh: SeshDto,
@@ -35,7 +35,7 @@ export class SeshController {
 
   @HttpCode(HttpStatus.OK)
   @Post(':id/accept')
-  @Role(ROLES.USER, ROLES.ADMIN)
+  @Role(ROLES.USER, ROLES.SUPER_ADMIN)
   rsvpForSesh(
     @Headers('token') token: string,
     @Param('id') seshId: string,

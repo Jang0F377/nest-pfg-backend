@@ -7,7 +7,7 @@ import { compare } from 'bcryptjs';
 @Injectable()
 export class PasswordHasherService {
   saltRounds: string;
-  constructor(private configService: ConfigService<ConfigServiceType>) {
+  constructor(configService: ConfigService<ConfigServiceType>) {
     this.saltRounds = configService.get('app.saltRounds');
   }
 

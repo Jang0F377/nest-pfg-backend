@@ -7,11 +7,12 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import mongoose from 'mongoose';
 import { ROLES } from 'src/constants/user';
 import { SeshDto } from 'src/modules/sesh/dto/sesh.dto';
 
 export class UserDto {
-  _id?: any;
+  _id?: mongoose.Schema.Types.ObjectId;
 
   @IsEmail({}, { message: 'Email must be a valid email format.' })
   email: string;
@@ -31,16 +32,16 @@ export class UserDto {
 
   @IsOptional()
   @IsArray()
-  recentSeshes?: Array<SeshDto>;
+  recentSeshes?: mongoose.Schema.Types.ObjectId[];
 
   @IsOptional()
-  upcomingUndecidedSeshes?: Array<SeshDto>;
+  upcomingUndecidedSeshes?: mongoose.Schema.Types.ObjectId[];
 
   @IsOptional()
-  upcomingAcceptedSeshes?: Array<SeshDto>;
+  upcomingAcceptedSeshes?: mongoose.Schema.Types.ObjectId[];
 
   @IsOptional()
-  upcomingDeclinedSeshes?: Array<SeshDto>;
+  upcomingDeclinedSeshes?: mongoose.Schema.Types.ObjectId[];
 
   @IsOptional()
   @IsBoolean()

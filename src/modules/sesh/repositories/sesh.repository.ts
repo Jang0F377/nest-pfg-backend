@@ -8,7 +8,7 @@ import { UserService } from 'src/modules/user/user.service';
 import { SeshDto } from '../dto/sesh.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Sesh } from '../model/sesh.model';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { UserDto } from 'src/modules/user/dto/user.dto';
 import { USER_SESH_PROJECTION } from 'src/constants/user';
 
@@ -30,37 +30,46 @@ export class SeshRepository {
   ): Promise<SeshDto> {
     const user = await this.userService.returnCurrentUser(
       token,
-      USER_SESH_PROJECTION,
+      USER_SESH_PROJECTION.concat(['-__v', '-email']),
     );
     if (!user) {
       throw new NotFoundException('User Not Found');
     }
     /* Set Sesh sentFrom to the creating User */
     sesh.sentFrom = user._id;
-    sesh.usersConfirmed = [user];
+    sesh.usersConfirmed = [user._id];
     sesh = await this.validateRecipients(sesh.recipients, sesh);
 
-    const createdSesh = await this.seshModel.create(sesh);
+    try {
+      const createdSesh = await this.seshModel.create(sesh);
 
-    await this.handleAddToRecipients(sesh.recipients, createdSesh);
-    await this.handleAddToSendersPool(sesh.sentFrom, createdSesh);
-    return createdSesh;
+      await this.handleAddToRecipients(sesh.recipients, createdSesh._id);
+      await this.handleAddToSendersPool(sesh.sentFrom, createdSesh._id);
+      return createdSesh;
+    } catch (err) {
+      console.log('ERROR', err);
+    }
   }
 
+  public async moveToAcceptedSeshes(
+    token: string,
+    seshId: string,
+  ): Promise<void> {}
+
   private async validateRecipients(
-    recipients: Array<string>,
+    recipients: mongoose.Schema.Types.ObjectId[],
     sesh: SeshDto,
   ): Promise<SeshDto> {
-    let validatedRecipients: Array<string> = [];
-    let setUsersUnconfirmed: Array<UserDto> = [];
+    let validatedRecipients: mongoose.Schema.Types.ObjectId[] = [];
+    let setUsersUnconfirmed: mongoose.Schema.Types.ObjectId[] = [];
     const results = recipients.map(async (recipient) => {
       const user = await this.userService.getUserByEmail(
-        recipient,
-        USER_SESH_PROJECTION.concat(['-role']),
+        recipient.toString(),
+        USER_SESH_PROJECTION.concat(['-__v', '-email', '-role']),
       );
       if (user) {
         validatedRecipients.push(user._id);
-        setUsersUnconfirmed.push(user);
+        setUsersUnconfirmed.push(user._id);
       }
     });
     await Promise.allSettled(results);
@@ -75,20 +84,20 @@ export class SeshRepository {
   }
 
   private async handleAddToRecipients(
-    recipients: Array<string>,
-    sesh: SeshDto,
+    recipients: mongoose.Schema.Types.ObjectId[],
+    seshId: mongoose.Schema.Types.ObjectId,
   ): Promise<void> {
     for await (const recipient of recipients) {
-      await this.userService.addSeshtoUsersUndecidedPool(recipient, sesh);
+      await this.userService.addSeshtoUsersUndecidedPool(recipient, seshId);
     }
   }
 
   private async handleAddToSendersPool(
-    id: string,
-    sesh: SeshDto,
+    id: mongoose.Schema.Types.ObjectId,
+    seshId: mongoose.Schema.Types.ObjectId,
   ): Promise<void> {
     try {
-      await this.userService.addSeshToUsersAcceptedPool(id, sesh);
+      await this.userService.addSeshToUsersAcceptedPool(id, seshId);
     } catch (err) {
       console.log('ERROR adding to senders accepted pool');
     }

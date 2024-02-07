@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { User } from 'src/modules/user/model/user.model';
+import mongoose, { Document } from 'mongoose';
+import { User, UserSchema } from 'src/modules/user/model/user.model';
 
 @Schema()
 export class Sesh extends Document {
@@ -18,26 +18,29 @@ export class Sesh extends Document {
   @Prop({ required: true })
   proposedTime: string;
 
-  @Prop({ required: true, type: Array })
-  recipients: Array<string>;
+  @Prop({ required: true, ref: 'User' })
+  recipients: mongoose.Schema.Types.ObjectId[];
 
-  @Prop()
-  sentFrom: string;
+  @Prop({ ref: 'User' })
+  sentFrom: mongoose.Schema.Types.ObjectId;
 
   @Prop({ required: false, default: Date.now() })
   _createdAt?: number;
 
   @Prop({ required: false })
-  _updatedAt?: number;
+  _updatedAt?: string;
 
-  @Prop({ required: false })
-  usersConfirmed?: Array<User>;
+  @Prop({
+    required: false,
+    ref: 'User',
+  })
+  usersConfirmed?: mongoose.Schema.Types.ObjectId[];
 
-  @Prop({ required: false })
-  usersDeclined?: Array<User>;
+  @Prop({ required: false, ref: 'User' })
+  usersDeclined?: mongoose.Schema.Types.ObjectId[];
 
-  @Prop({ required: false })
-  usersUnconfirmed?: Array<User>;
+  @Prop({ required: false, ref: 'User' })
+  usersUnconfirmed?: mongoose.Schema.Types.ObjectId[];
 }
 
 export const SeshSchema = SchemaFactory.createForClass(Sesh);

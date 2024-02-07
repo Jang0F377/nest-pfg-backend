@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
 
   pfg-mongodb:
-    image: mongo:4.4.6
+    image: mongo:7.0
     container_name: pfg-mongodb
     volumes:
       - pfg-mongo-data:/data/db

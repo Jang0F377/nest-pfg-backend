@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import { ROLES } from 'src/constants/user';
-import { Sesh } from 'src/modules/sesh/model/sesh.model';
+import { Sesh, SeshSchema } from 'src/modules/sesh/model/sesh.model';
 
 @Schema()
 export class User extends Document {
@@ -27,28 +27,31 @@ export class User extends Document {
   favoriteGames?: Array<string>;
 
   @Prop({
-    type: Array,
     default: [],
+    ref: 'Sesh',
   })
-  recentSeshes?: Array<Sesh>;
+  recentSeshes?: mongoose.Schema.Types.ObjectId[];
 
   @Prop({
     required: false,
     default: [],
+    ref: 'Sesh',
   })
-  upcomingUndecidedSeshes?: Array<Sesh>;
+  upcomingUndecidedSeshes?: mongoose.Schema.Types.ObjectId[];
 
   @Prop({
     required: false,
     default: [],
+    ref: 'Sesh',
   })
-  upcomingAcceptedSeshes?: Array<Sesh>;
+  upcomingAcceptedSeshes?: mongoose.Schema.Types.ObjectId[];
 
   @Prop({
     required: false,
     default: [],
+    ref: 'Sesh',
   })
-  upcomingDeclinedSeshes?: Array<Sesh>;
+  upcomingDeclinedSeshes?: mongoose.Schema.Types.ObjectId[];
 
   @Prop({
     default: false,

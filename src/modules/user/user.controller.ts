@@ -20,7 +20,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('me')
-  @Role(ROLES.USER, ROLES.ADMIN)
+  @Role(ROLES.USER, ROLES.SUPER_ADMIN)
   returnCurrentUser(@Headers('token') token: string): Promise<UserDto> {
     return this.userService.returnCurrentUser(token);
   }
@@ -49,16 +49,16 @@ export class UserController {
     return this.userService.loginUser(credentials);
   }
 
-  @Role(ROLES.USER, ROLES.ADMIN)
-  @Patch('me')
-  updateCurrentUser(
+  @Role(ROLES.USER, ROLES.SUPER_ADMIN)
+  @Patch('me/favorites')
+  updateFavoriteGames(
     @Headers('token') token: string,
-    @Body() updatedUser: PartialUserDto,
+    @Body() favoriteGames: PartialUserDto,
   ): Promise<UserDto> {
-    return this.userService.updateCurrentUser(token, updatedUser);
+    return this.userService.updateFavoriteGames(token, favoriteGames);
   }
 
-  @Role(ROLES.ADMIN, ROLES.SUPER_ADMIN)
+  @Role(ROLES.SUPER_ADMIN)
   @Delete('all')
   resetUserDb(): Promise<Record<string, any>> {
     return this.userService.resetUserDb();

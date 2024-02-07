@@ -1,5 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import mongoose from 'mongoose';
 import { UserDto } from 'src/modules/user/dto/user.dto';
 
 export class SeshDto {
@@ -15,21 +16,21 @@ export class SeshDto {
   proposedTime: string;
 
   @IsNotEmpty({ message: 'recipients cannot be empty' })
-  recipients: Array<string>;
+  recipients: mongoose.Schema.Types.ObjectId[];
 
   @IsOptional()
   @IsNotEmpty({ message: 'sentFrom cannot be empty' })
-  sentFrom: string;
+  sentFrom: mongoose.Schema.Types.ObjectId;
 
   _createdAt?: number;
 
-  _updatedAt?: number;
+  _updatedAt?: string;
 
-  usersConfirmed?: Array<UserDto>;
+  usersConfirmed?: mongoose.Schema.Types.ObjectId[];
 
-  usersDeclined?: Array<UserDto>;
+  usersDeclined?: mongoose.Schema.Types.ObjectId[];
 
-  usersUnconfirmed?: Array<UserDto>;
+  usersUnconfirmed?: mongoose.Schema.Types.ObjectId[];
 }
 
 export class PartialSeshDto extends PartialType(SeshDto) {}

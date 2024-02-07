@@ -12,12 +12,24 @@ export class ListenersService {
   ) {}
 
   @OnEvent(SESH_EVENTS.USER_CONFIRMED)
-  async handleUserConfirmedEvent(event: SeshAcceptedEvent) {
-    const { _id } = await this.userService.returnCurrentUser(event.token);
-    const sesh = await this.seshService.getSesh(event.seshId);
-    console.log("EVENT REC'D: ", {
-      _id,
-      sesh,
-    });
+  async handleUserConfirmedEvent(event: SeshAcceptedEvent): Promise<any> {
+    /**
+     * When someone accepts a Sesh:
+     * 1. On sesh itself move from unconfirmed to confirmed.
+     * 2. On user move from their undecided to accepted.
+     * 3. Notify creator and/or other recipients.
+     */
+
+    // get user
+    const acceptingUser = await this.userService.returnCurrentUser(event.token);
+
+    // 1. move from unconfirmed to confirmed.
+    await this.seshService.confirmUser(acceptingUser._id, event.seshId);
+
+    // 2. User - move from undecided to accepted.
+    await this.userService.moveFromUndecidedToAccepted(
+      acceptingUser._id,
+      event.seshId,
+    );
   }
 }
