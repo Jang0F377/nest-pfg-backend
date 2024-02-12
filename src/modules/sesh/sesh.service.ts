@@ -44,6 +44,9 @@ export class SeshService {
   }
 
   async rsvpForSesh(token: string, seshId: string): Promise<any> {
+    // Validate Sesh exists
+    await this.getSesh(seshId);
+
     // Create event
     const acceptedEvent = new SeshAcceptedEvent(token, seshId);
 
