@@ -1,17 +1,12 @@
 // Importing necessary modules and decorators from NestJS and other libraries
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config'; // Used for accessing configuration settings
-import { ConfigServiceType } from 'src/constants/types/environment'; // Custom type for config service
-import { genSalt, hash, compare } from 'bcryptjs'; // Functions from bcryptjs for hashing and comparing passwords
-
-// Decorator that marks a class as a provider that can be injected as a dependency
+import { ConfigService } from '@nestjs/config';
+import { ConfigServiceType } from 'src/constants/types/environment';
+import { genSalt, hash, compare } from 'bcryptjs';
 @Injectable()
 export class PasswordHasherService {
-  saltRounds: string; // Variable to store the number of rounds for salt generation
-
-  // Constructor that injects the ConfigService to access application settings
+  saltRounds: string;
   constructor(configService: ConfigService<ConfigServiceType>) {
-    // Retrieves the salt rounds setting from the application's configuration
     this.saltRounds = configService.get('app.saltRounds');
   }
 
