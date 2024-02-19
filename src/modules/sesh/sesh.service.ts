@@ -10,7 +10,11 @@ import { Sesh } from './model/sesh.model';
 import mongoose, { Model } from 'mongoose';
 import { SeshRepository } from './repositories/sesh.repository';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { SESH_EVENTS, SeshAcceptedEvent } from 'src/constants/events';
+import {
+  SESH_EVENTS,
+  SeshAcceptedEvent,
+  SeshDeclinedEvent,
+} from 'src/constants/events';
 import { POPULATE_PATH_SESH, POPULATE_SELECT_SESH } from 'src/constants/user';
 
 @Injectable()
@@ -49,11 +53,14 @@ export class SeshService {
 
     // Create event
     const acceptedEvent = new SeshAcceptedEvent(token, seshId);
+
     // Emit
     await this.eventEmitter.emitAsync(
       SESH_EVENTS.USER_CONFIRMED,
       acceptedEvent,
     );
+
+    // Return the updated sesh
     const updatedSesh = await this.seshModel.findById(seshId).populate({
       path: POPULATE_PATH_SESH,
       select: POPULATE_SELECT_SESH,
@@ -70,7 +77,22 @@ export class SeshService {
     // Validate Sesh exists - will throw 404 if not found.
     await this.getSesh(seshId);
 
-    //
+    // Create event
+    const declinedEvent = new SeshDeclinedEvent(token, seshId);
+    // Emit
+    await this.eventEmitter.emitAsync(SESH_EVENTS.USER_DECLINED, declinedEvent);
+
+    // Return the updated sesh
+    const updatedSesh = await this.seshModel.findById(seshId).populate({
+      path: POPULATE_PATH_SESH,
+      select: POPULATE_SELECT_SESH,
+    });
+
+    if (!updatedSesh) {
+      throw new NotFoundException();
+    }
+
+    return updatedSesh;
   }
 
   async confirmUser(
@@ -97,8 +119,37 @@ export class SeshService {
         },
         { new: true },
       );
-    } catch (err) {
-      throw new UnprocessableEntityException(err);
+    } catch {
+      throw new UnprocessableEntityException();
+    }
+  }
+
+  async declineUser(
+    userId: mongoose.Types.ObjectId,
+    sesh: string,
+  ): Promise<SeshDto> {
+    // turn the sesh string into mongo ObjectId
+    const seshId = new mongoose.Types.ObjectId(sesh);
+    // try to update the sesh by pulling userId out
+    // of unconfirmed and into declined
+    try {
+      return await this.seshModel.findByIdAndUpdate(
+        seshId,
+        {
+          $set: {
+            _updatedAt: new Date().toISOString(),
+          },
+          $pull: {
+            usersUnconfirmed: userId,
+          },
+          $push: {
+            usersDeclined: userId,
+          },
+        },
+        { new: true },
+      );
+    } catch {
+      throw new UnprocessableEntityException();
     }
   }
 }

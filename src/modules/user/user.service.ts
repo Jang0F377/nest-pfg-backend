@@ -46,7 +46,7 @@ export class UserService {
     const itsMe = await this.userModel
       .findById(sub, constantProjections)
       .populate({
-        path: 'upcomingUndecidedSeshes upcomingAcceptedSeshes',
+        path: 'upcomingUndecidedSeshes upcomingAcceptedSeshes upcomingDeclinedSeshes recentSeshes',
         select:
           'game proposedDay proposedTime recipients sentFrom usersConfirmed usersDeclined usersUnconfirmed',
       })
@@ -140,7 +140,7 @@ export class UserService {
         { $push: { upcomingUndecidedSeshes: seshId } },
         { new: true, projection: USER_SESH_PROJECTION.concat(['-role']) },
       );
-    } catch (err) {
+    } catch {
       throw new BadRequestException('Unable to add sesh to user pool');
     }
   }
@@ -173,19 +173,29 @@ export class UserService {
         },
         { new: true },
       );
-    } catch (err) {
-      throw new UnprocessableEntityException(err);
+    } catch {
+      throw new UnprocessableEntityException();
     }
   }
 
-  async removeSeshFromUsersPool(id: mongoose.Types.ObjectId, sesh: SeshDto) {
-    return await this.userModel.findByIdAndUpdate(
-      id,
-      {
-        $pull: { upcomingUndecidedSeshes: sesh },
-      },
-      { new: true },
-    );
+  async moveFromUndecidedToDeclined(id: mongoose.Types.ObjectId, sesh: string) {
+    const seshId = new mongoose.Types.ObjectId(sesh);
+    try {
+      return await this.userModel.findByIdAndUpdate(
+        id,
+        {
+          $pull: {
+            upcomingUndecidedSeshes: seshId,
+          },
+          $push: {
+            upcomingDeclinedSeshes: seshId,
+          },
+        },
+        { new: true },
+      );
+    } catch {
+      throw new UnprocessableEntityException();
+    }
   }
 
   async updateFavoriteGames(
