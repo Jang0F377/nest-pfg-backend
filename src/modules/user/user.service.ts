@@ -21,7 +21,6 @@ import {
   USER_SESH_PROJECTION,
 } from 'src/constants/user';
 import { PasswordHasherService } from 'src/services/password-hasher/password-hasher.service';
-import { SeshDto } from '../sesh/dto/sesh.dto';
 
 @Injectable()
 export class UserService {
@@ -33,6 +32,12 @@ export class UserService {
     private hasherService: PasswordHasherService,
   ) {}
 
+  /**
+   * Retrieves the current user based on the provided JWT token.
+   * @param token The JWT token provided by the user.
+   * @param projections Optional fields to include in the response.
+   * @returns The current user's data.
+   */
   async returnCurrentUser(
     token: string,
     projections?: Array<string>,
@@ -59,10 +64,20 @@ export class UserService {
     return itsMe;
   }
 
+  /**
+   * Retrieves all users from the database.
+   * @returns An array of UserDto.
+   */
   async returnAllUsers(): Promise<UserDto[]> {
     return await this.userModel.find().exec();
   }
 
+  /**
+   * Retrieves a user by their email address.
+   * @param email The email address to search for.
+   * @param projections Optional fields to include in the response.
+   * @returns The user's data.
+   */
   async getUserByEmail(
     email: string,
     projections?: Array<string>,
@@ -79,6 +94,11 @@ export class UserService {
     return user;
   }
 
+  /**
+   * Retrieves a specific user by their ID.
+   * @param id The user's ID.
+   * @returns The user's data.
+   */
   async returnSpecificUser(id: string): Promise<UserDto> {
     const foundUser = await this.userModel.findById(id);
 
@@ -88,6 +108,11 @@ export class UserService {
     return foundUser;
   }
 
+  /**
+   * Logs in a user by validating their credentials and generating a JWT token.
+   * @param credentials The user's login credentials.
+   * @returns A JWT token.
+   */
   async loginUser(credentials: Credentials): Promise<string> {
     const user = await this.validateCredentials(credentials);
     const userProfile = this.convertToUserProfile(user);
@@ -95,6 +120,11 @@ export class UserService {
     return token;
   }
 
+  /**
+   * Registers a new user in the database.
+   * @param credentials The user's registration credentials.
+   * @returns The newly created user's data.
+   */
   async registerNewUser(credentials: Credentials): Promise<UserDto> {
     const userExists = await this.userModel
       .findOne({ email: credentials.email })
@@ -130,6 +160,12 @@ export class UserService {
     return await this.userModel.create(userObject);
   }
 
+  /**
+   * Adds a session to a user's undecided pool.
+   * @param id The user's ID.
+   * @param seshId The session ID to add.
+   * @returns The updated user's data.
+   */
   async addSeshtoUsersUndecidedPool(
     id: mongoose.Types.ObjectId,
     seshId: mongoose.Types.ObjectId,
@@ -145,7 +181,13 @@ export class UserService {
     }
   }
 
-  async addSeshToUsersAcceptedPool(
+  /**
+   * Adds the session to the senders accepted pool.
+   * @param id The user's ID.
+   * @param seshId The session ID to add.
+   * @returns The updated user's data.
+   */
+  async handleAddToSendersAcceptedPool(
     id: mongoose.Types.ObjectId,
     seshId: mongoose.Types.ObjectId,
   ) {
@@ -158,6 +200,12 @@ export class UserService {
     );
   }
 
+  /**
+   * Moves a session from a users undecided to accepted pool.
+   * @param id The user's ID.
+   * @param seshId The session ID to add.
+   * @returns The updated user's data.
+   */
   async moveFromUndecidedToAccepted(id: mongoose.Types.ObjectId, sesh: string) {
     const seshId = new mongoose.Types.ObjectId(sesh);
     try {
@@ -178,6 +226,12 @@ export class UserService {
     }
   }
 
+  /**
+   * Moves a session from a users undecided to declined pool.
+   * @param id The user's ID.
+   * @param seshId The session ID to add.
+   * @returns The updated user's data.
+   */
   async moveFromUndecidedToDeclined(id: mongoose.Types.ObjectId, sesh: string) {
     const seshId = new mongoose.Types.ObjectId(sesh);
     try {
@@ -236,19 +290,37 @@ export class UserService {
   }
 
   /* Private Helper Funcs for JWT functionality */
-  convertToUserProfile(user: UserDto): UserProfile {
+
+  /**
+   * Converts a UserDto to a UserProfile object for JWT token generation.
+   * @param user The user's data.
+   * @returns A UserProfile object.
+   */
+  private convertToUserProfile(user: UserDto): UserProfile {
     return {
       sub: `${user._id}:${user.email}`,
       role: user.role,
     };
   }
 
-  grabIdFromSub(sub: string): string {
+  /**
+   * Extracts the user ID from the subject field of a JWT token.
+   * @param sub The subject field from a JWT token.
+   * @returns The user ID.
+   */
+  private grabIdFromSub(sub: string): string {
     const id = sub.split(':')[0];
     return id;
   }
 
-  async validateCredentials(credentials: Credentials): Promise<UserDto> {
+  /**
+   * Validates a user's login credentials.
+   * @param credentials The credentials to validate.
+   * @returns The user's data if valid.
+   */
+  private async validateCredentials(
+    credentials: Credentials,
+  ): Promise<UserDto> {
     const findUser = await this.userWithPassword.findOne({
       email: credentials.email,
     });

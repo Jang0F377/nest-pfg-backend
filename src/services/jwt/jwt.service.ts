@@ -16,6 +16,13 @@ const verifyTokenAsync = promisify(jwt.verify);
 export class JwtService {
   constructor(private configService: ConfigService<ConfigServiceType>) {}
   secret = this.configService.get<AppSecretsConfig>('app.secret');
+
+  /**
+   * Generates a JWT token for a user profile.
+   *
+   * @param {UserProfile} userProfile - The user profile data to encode in the token.
+   * @returns {Promise<string>} A promise that resolves with the generated JWT token.
+   */
   async generateToken(userProfile: UserProfile): Promise<string> {
     let token: string;
     try {
@@ -28,6 +35,12 @@ export class JwtService {
     return token;
   }
 
+  /**
+   * Validates a given JWT token and returns the decoded user profile.
+   *
+   * @param {string} token - The JWT token to validate.
+   * @returns {Promise<UserProfile>} A promise that resolves with the decoded user profile.
+   */
   async validateToken(token: string): Promise<UserProfile> {
     let userProfile: UserProfile;
     try {

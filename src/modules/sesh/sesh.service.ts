@@ -25,6 +25,12 @@ export class SeshService {
     private eventEmitter: EventEmitter2,
   ) {}
 
+  /**
+   * Retrieves a specific sesh by its ID.
+   * @param id The ID of the sesh to retrieve.
+   * @returns A promise that resolves with the details of the sesh.
+   * @throws {NotFoundException} When the sesh cannot be found by the given ID.
+   */
   async getSesh(id: string): Promise<SeshDto> {
     const sesh = await this.seshModel.findById(id).populate({
       path: POPULATE_PATH_SESH,
@@ -38,6 +44,12 @@ export class SeshService {
     return sesh;
   }
 
+  /**
+   * Creates a new sesh with the given details.
+   * @param token A JWT token to authenticate the request.
+   * @param sesh The sesh details to be created.
+   * @returns A promise that resolves with the created sesh details.
+   */
   async createNewSesh(token: string, sesh: SeshDto): Promise<SeshDto> {
     const finalizedSesh = await this.seshRepository.finalizeSeshDetails(
       token,
@@ -47,6 +59,13 @@ export class SeshService {
     return finalizedSesh;
   }
 
+  /**
+   * RSVPs for a sesh indicating acceptance.
+   * @param token A JWT token to authenticate the request.
+   * @param seshId The ID of the sesh to RSVP for.
+   * @returns A promise that resolves with the updated sesh details after accepting.
+   * @throws {NotFoundException} When the sesh cannot be found by the given ID.
+   */
   async rsvpForSesh(token: string, seshId: string): Promise<any> {
     // Validate Sesh exists - will throw 404 if not found.
     await this.getSesh(seshId);
@@ -73,6 +92,13 @@ export class SeshService {
     return updatedSesh;
   }
 
+  /**
+   * Declines the RSVP for a sesh.
+   * @param token A JWT token to authenticate the request.
+   * @param seshId The ID of the sesh to decline.
+   * @returns A promise that resolves with the updated sesh details after declining.
+   * @throws {NotFoundException} When the sesh cannot be found by the given ID.
+   */
   async declineRsvpForSesh(token: string, seshId: string): Promise<any> {
     // Validate Sesh exists - will throw 404 if not found.
     await this.getSesh(seshId);
@@ -95,6 +121,13 @@ export class SeshService {
     return updatedSesh;
   }
 
+  /**
+   * Confirms a user's participation in a sesh.
+   * @param userId The user's ID as a MongoDB ObjectId.
+   * @param sesh The ID of the sesh for which the user's participation is being confirmed.
+   * @returns A promise that resolves with the updated sesh details.
+   * @throws {UnprocessableEntityException} When the update operation fails.
+   */
   async confirmUser(
     userId: mongoose.Types.ObjectId,
     sesh: string,
@@ -124,6 +157,13 @@ export class SeshService {
     }
   }
 
+  /**
+   * Declines a user's participation in a sesh.
+   * @param userId The user's ID as a MongoDB ObjectId.
+   * @param sesh The ID of the sesh for which the user's participation is being declined.
+   * @returns A promise that resolves with the updated sesh details.
+   * @throws {UnprocessableEntityException} When the update operation fails.
+   */
   async declineUser(
     userId: mongoose.Types.ObjectId,
     sesh: string,
