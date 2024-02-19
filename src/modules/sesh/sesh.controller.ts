@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Headers,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Get, Headers, Param, Post } from '@nestjs/common';
 import { SeshService } from './sesh.service';
 import { Public } from 'src/common/decorators/public.decorator';
 import { SeshDto } from './dto/sesh.dto';
@@ -33,7 +24,6 @@ export class SeshController {
     return this.seshService.createNewSesh(token, sesh);
   }
 
-  @HttpCode(HttpStatus.OK)
   @Post(':id/accept')
   @Role(ROLES.USER, ROLES.SUPER_ADMIN)
   rsvpForSesh(
@@ -41,5 +31,14 @@ export class SeshController {
     @Param('id') seshId: string,
   ): Promise<any> {
     return this.seshService.rsvpForSesh(token, seshId);
+  }
+
+  @Post(':id/decline')
+  @Role(ROLES.USER, ROLES.SUPER_ADMIN)
+  declineRsvpForSesh(
+    @Headers('token') token: string,
+    @Param('id') seshId: string,
+  ): Promise<any> {
+    return this.seshService.declineRsvpForSesh(token, seshId);
   }
 }

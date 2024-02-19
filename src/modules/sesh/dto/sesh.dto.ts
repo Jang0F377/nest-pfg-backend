@@ -16,21 +16,21 @@ export class SeshDto {
   proposedTime: string;
 
   @IsNotEmpty({ message: 'recipients cannot be empty' })
-  recipients: mongoose.Schema.Types.ObjectId[];
+  recipients: mongoose.Types.ObjectId[];
 
   @IsOptional()
   @IsNotEmpty({ message: 'sentFrom cannot be empty' })
-  sentFrom: mongoose.Schema.Types.ObjectId;
+  sentFrom: mongoose.Types.ObjectId;
 
   _createdAt?: number;
 
   _updatedAt?: string;
 
-  usersConfirmed?: mongoose.Schema.Types.ObjectId[];
+  usersConfirmed?: mongoose.Types.ObjectId[];
 
-  usersDeclined?: mongoose.Schema.Types.ObjectId[];
+  usersDeclined?: mongoose.Types.ObjectId[];
 
-  usersUnconfirmed?: mongoose.Schema.Types.ObjectId[];
+  usersUnconfirmed?: mongoose.Types.ObjectId[];
 }
 
 export class PartialSeshDto extends PartialType(SeshDto) {}

@@ -18,11 +18,20 @@ import { LoggerModule } from 'nestjs-pino';
 
 @Module({
   imports: [
-    LoggerModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [config],
       cache: true,
+    }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        base: {
+          pid: undefined,
+          hostname: undefined,
+          service: 'pfg-api-service',
+        },
+      },
+      exclude: [],
     }),
     DbUriModule,
     EventEmitterModule.forRoot(),

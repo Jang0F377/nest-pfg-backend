@@ -57,11 +57,11 @@ export class SeshRepository {
   ): Promise<void> {}
 
   private async validateRecipients(
-    recipients: mongoose.Schema.Types.ObjectId[],
+    recipients: mongoose.Types.ObjectId[],
     sesh: SeshDto,
   ): Promise<SeshDto> {
-    let validatedRecipients: mongoose.Schema.Types.ObjectId[] = [];
-    let setUsersUnconfirmed: mongoose.Schema.Types.ObjectId[] = [];
+    let validatedRecipients: mongoose.Types.ObjectId[] = [];
+    let setUsersUnconfirmed: mongoose.Types.ObjectId[] = [];
     const results = recipients.map(async (recipient) => {
       const user = await this.userService.getUserByEmail(
         recipient.toString(),
@@ -84,8 +84,8 @@ export class SeshRepository {
   }
 
   private async handleAddToRecipients(
-    recipients: mongoose.Schema.Types.ObjectId[],
-    seshId: mongoose.Schema.Types.ObjectId,
+    recipients: mongoose.Types.ObjectId[],
+    seshId: mongoose.Types.ObjectId,
   ): Promise<void> {
     for await (const recipient of recipients) {
       await this.userService.addSeshtoUsersUndecidedPool(recipient, seshId);
@@ -93,8 +93,8 @@ export class SeshRepository {
   }
 
   private async handleAddToSendersPool(
-    id: mongoose.Schema.Types.ObjectId,
-    seshId: mongoose.Schema.Types.ObjectId,
+    id: mongoose.Types.ObjectId,
+    seshId: mongoose.Types.ObjectId,
   ): Promise<void> {
     try {
       await this.userService.addSeshToUsersAcceptedPool(id, seshId);

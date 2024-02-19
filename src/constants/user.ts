@@ -22,4 +22,4 @@ export const CONSTANT_PROJECTION = ['-role'];
 export const POPULATE_PATH_SESH =
   'recipients sentFrom usersConfirmed usersUnconfirmed usersDeclined';
 
-export const POPULATE_SELECT_SESH = '_id email';
+export const POPULATE_SELECT_SESH = '_id';

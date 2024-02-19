@@ -30,28 +30,28 @@ export class User extends Document {
     default: [],
     ref: 'Sesh',
   })
-  recentSeshes?: mongoose.Schema.Types.ObjectId[];
+  recentSeshes?: mongoose.Types.ObjectId[];
 
   @Prop({
     required: false,
     default: [],
     ref: 'Sesh',
   })
-  upcomingUndecidedSeshes?: mongoose.Schema.Types.ObjectId[];
+  upcomingUndecidedSeshes?: mongoose.Types.ObjectId[];
 
   @Prop({
     required: false,
     default: [],
     ref: 'Sesh',
   })
-  upcomingAcceptedSeshes?: mongoose.Schema.Types.ObjectId[];
+  upcomingAcceptedSeshes?: mongoose.Types.ObjectId[];
 
   @Prop({
     required: false,
     default: [],
     ref: 'Sesh',
   })
-  upcomingDeclinedSeshes?: mongoose.Schema.Types.ObjectId[];
+  upcomingDeclinedSeshes?: mongoose.Types.ObjectId[];
 
   @Prop({
     default: false,

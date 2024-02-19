@@ -44,24 +44,43 @@ export class SeshService {
   }
 
   async rsvpForSesh(token: string, seshId: string): Promise<any> {
-    // Validate Sesh exists
+    // Validate Sesh exists - will throw 404 if not found.
     await this.getSesh(seshId);
 
     // Create event
     const acceptedEvent = new SeshAcceptedEvent(token, seshId);
-
     // Emit
-    return await this.eventEmitter.emitAsync(
+    await this.eventEmitter.emitAsync(
       SESH_EVENTS.USER_CONFIRMED,
       acceptedEvent,
     );
+    const updatedSesh = await this.seshModel.findById(seshId).populate({
+      path: POPULATE_PATH_SESH,
+      select: POPULATE_SELECT_SESH,
+    });
+
+    if (!updatedSesh) {
+      throw new NotFoundException();
+    }
+
+    return updatedSesh;
+  }
+
+  async declineRsvpForSesh(token: string, seshId: string): Promise<any> {
+    // Validate Sesh exists - will throw 404 if not found.
+    await this.getSesh(seshId);
+
+    //
   }
 
   async confirmUser(
-    userId: mongoose.Schema.Types.ObjectId,
+    userId: mongoose.Types.ObjectId,
     sesh: string,
   ): Promise<SeshDto> {
+    // Create a mongo ObjectId
     const seshId = new mongoose.Types.ObjectId(sesh);
+    // try to update the sesh by pulling userId out
+    // of unconfirmed and into confirmed
     try {
       return await this.seshModel.findByIdAndUpdate(
         seshId,

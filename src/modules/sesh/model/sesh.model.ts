@@ -19,10 +19,10 @@ export class Sesh extends Document {
   proposedTime: string;
 
   @Prop({ required: true, ref: 'User' })
-  recipients: mongoose.Schema.Types.ObjectId[];
+  recipients: mongoose.Types.ObjectId[];
 
   @Prop({ ref: 'User' })
-  sentFrom: mongoose.Schema.Types.ObjectId;
+  sentFrom: mongoose.Types.ObjectId;
 
   @Prop({ required: false, default: Date.now() })
   _createdAt?: number;
@@ -34,13 +34,13 @@ export class Sesh extends Document {
     required: false,
     ref: 'User',
   })
-  usersConfirmed?: mongoose.Schema.Types.ObjectId[];
+  usersConfirmed?: mongoose.Types.ObjectId[];
 
   @Prop({ required: false, ref: 'User' })
-  usersDeclined?: mongoose.Schema.Types.ObjectId[];
+  usersDeclined?: mongoose.Types.ObjectId[];
 
   @Prop({ required: false, ref: 'User' })
-  usersUnconfirmed?: mongoose.Schema.Types.ObjectId[];
+  usersUnconfirmed?: mongoose.Types.ObjectId[];
 }
 
 export const SeshSchema = SchemaFactory.createForClass(Sesh);

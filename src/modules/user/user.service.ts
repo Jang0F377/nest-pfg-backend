@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  HttpStatus,
   Injectable,
   NotAcceptableException,
   NotFoundException,
@@ -10,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './model/user.model';
-import mongoose, { Model, ProjectionType } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { UserWithPassword } from './model/user-with-password.model';
 import { JwtService } from 'src/services/jwt/jwt.service';
 import { PartialUserDto, UserDto } from './dto/user.dto';
@@ -132,8 +131,8 @@ export class UserService {
   }
 
   async addSeshtoUsersUndecidedPool(
-    id: mongoose.Schema.Types.ObjectId,
-    seshId: mongoose.Schema.Types.ObjectId,
+    id: mongoose.Types.ObjectId,
+    seshId: mongoose.Types.ObjectId,
   ): Promise<UserDto> {
     try {
       return await this.userModel.findByIdAndUpdate(
@@ -147,8 +146,8 @@ export class UserService {
   }
 
   async addSeshToUsersAcceptedPool(
-    id: mongoose.Schema.Types.ObjectId,
-    seshId: mongoose.Schema.Types.ObjectId,
+    id: mongoose.Types.ObjectId,
+    seshId: mongoose.Types.ObjectId,
   ) {
     return await this.userModel.findByIdAndUpdate(
       id,
@@ -159,10 +158,7 @@ export class UserService {
     );
   }
 
-  async moveFromUndecidedToAccepted(
-    id: mongoose.Schema.Types.ObjectId,
-    sesh: string,
-  ) {
+  async moveFromUndecidedToAccepted(id: mongoose.Types.ObjectId, sesh: string) {
     const seshId = new mongoose.Types.ObjectId(sesh);
     try {
       return await this.userModel.findByIdAndUpdate(
@@ -182,10 +178,7 @@ export class UserService {
     }
   }
 
-  async removeSeshFromUsersPool(
-    id: mongoose.Schema.Types.ObjectId,
-    sesh: SeshDto,
-  ) {
+  async removeSeshFromUsersPool(id: mongoose.Types.ObjectId, sesh: SeshDto) {
     return await this.userModel.findByIdAndUpdate(
       id,
       {

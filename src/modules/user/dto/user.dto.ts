@@ -12,7 +12,7 @@ import { ROLES } from 'src/constants/user';
 import { SeshDto } from 'src/modules/sesh/dto/sesh.dto';
 
 export class UserDto {
-  _id?: mongoose.Schema.Types.ObjectId;
+  _id?: mongoose.Types.ObjectId;
 
   @IsEmail({}, { message: 'Email must be a valid email format.' })
   email: string;
@@ -32,16 +32,16 @@ export class UserDto {
 
   @IsOptional()
   @IsArray()
-  recentSeshes?: mongoose.Schema.Types.ObjectId[];
+  recentSeshes?: mongoose.Types.ObjectId[];
 
   @IsOptional()
-  upcomingUndecidedSeshes?: mongoose.Schema.Types.ObjectId[];
+  upcomingUndecidedSeshes?: mongoose.Types.ObjectId[];
 
   @IsOptional()
-  upcomingAcceptedSeshes?: mongoose.Schema.Types.ObjectId[];
+  upcomingAcceptedSeshes?: mongoose.Types.ObjectId[];
 
   @IsOptional()
-  upcomingDeclinedSeshes?: mongoose.Schema.Types.ObjectId[];
+  upcomingDeclinedSeshes?: mongoose.Types.ObjectId[];
 
   @IsOptional()
   @IsBoolean()
