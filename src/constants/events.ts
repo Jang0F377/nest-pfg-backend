@@ -21,3 +21,12 @@ export class SeshDeclinedEvent {
     this.seshId = seshId;
   }
 }
+
+export class SeshUpdatedEvent {
+  token: string;
+  seshId: string;
+  constructor(token: string, seshId: string) {
+    this.token = token;
+    this.seshId = seshId;
+  }
+}

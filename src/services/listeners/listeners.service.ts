@@ -30,7 +30,7 @@ export class ListenersService {
     const { usersUnconfirmed } = await this.seshService.getSesh(event.seshId);
 
     // Validate that the user is in the unconfirmed array
-    const verifyUserInvite = usersUnconfirmed.some((x, idx) => {
+    const verifyUserInvite = usersUnconfirmed.some((x) => {
       return x._id.toString() === acceptingUser._id.toString();
     });
 
@@ -63,7 +63,7 @@ export class ListenersService {
     const { usersUnconfirmed } = await this.seshService.getSesh(event.seshId);
 
     // Validate that the user is in the unconfirmed array
-    const verifyUserInvite = usersUnconfirmed.some((x, idx) => {
+    const verifyUserInvite = usersUnconfirmed.some((x) => {
       return x._id.toString() === decliningUser._id.toString();
     });
 

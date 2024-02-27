@@ -204,7 +204,7 @@ export class SeshService {
     const newSesh = await this.seshModel.findByIdAndUpdate(
       seshId,
       {
-        $set: updatedSesh,
+        $set: { updatedSesh, _updatedAt: new Date().toISOString() },
       },
       { new: true },
     );
