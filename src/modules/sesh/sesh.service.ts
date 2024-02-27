@@ -4,7 +4,7 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { SeshDto } from './dto/sesh.dto';
+import { PartialSeshDto, SeshDto } from './dto/sesh.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Sesh } from './model/sesh.model';
 import mongoose, { Model } from 'mongoose';
@@ -66,7 +66,7 @@ export class SeshService {
    * @returns A promise that resolves with the updated sesh details after accepting.
    * @throws {NotFoundException} When the sesh cannot be found by the given ID.
    */
-  async rsvpForSesh(token: string, seshId: string): Promise<any> {
+  async rsvpForSesh(token: string, seshId: string): Promise<SeshDto> {
     // Validate Sesh exists - will throw 404 if not found.
     await this.getSesh(seshId);
 
@@ -99,7 +99,7 @@ export class SeshService {
    * @returns A promise that resolves with the updated sesh details after declining.
    * @throws {NotFoundException} When the sesh cannot be found by the given ID.
    */
-  async declineRsvpForSesh(token: string, seshId: string): Promise<any> {
+  async declineRsvpForSesh(token: string, seshId: string): Promise<SeshDto> {
     // Validate Sesh exists - will throw 404 if not found.
     await this.getSesh(seshId);
 
@@ -191,5 +191,28 @@ export class SeshService {
     } catch {
       throw new UnprocessableEntityException();
     }
+  }
+  async updateSesh(
+    token: string,
+    sesh: string,
+    updatedSesh: PartialSeshDto,
+  ): Promise<SeshDto> {
+    //TODO VALIDATION
+    // turn the sesh string into mongo ObjectId
+    const seshId = new mongoose.Types.ObjectId(sesh);
+
+    const newSesh = await this.seshModel.findByIdAndUpdate(
+      seshId,
+      {
+        $set: updatedSesh,
+      },
+      { new: true },
+    );
+
+    if (!newSesh) {
+      throw new NotFoundException('Unable to find and update the sesh!');
+    }
+
+    return newSesh;
   }
 }

@@ -1,9 +1,18 @@
-import { Body, Controller, Get, Headers, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { SeshService } from './sesh.service';
 import { Public } from 'src/common/decorators/public.decorator';
-import { SeshDto } from './dto/sesh.dto';
+import { PartialSeshDto, SeshDto } from './dto/sesh.dto';
 import { Role } from 'src/common/decorators/role.decorator';
 import { ROLES } from 'src/constants/user';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Controller('sesh')
 export class SeshController {
@@ -17,6 +26,11 @@ export class SeshController {
 
   @Post('create')
   @Role(ROLES.USER, ROLES.SUPER_ADMIN)
+  @ApiResponse({
+    status: 201,
+    type: SeshDto,
+    description: 'The Sesh has been successfully created.',
+  })
   createNewSesh(
     @Headers('token') token: string,
     @Body() sesh: SeshDto,
@@ -29,7 +43,7 @@ export class SeshController {
   rsvpForSesh(
     @Headers('token') token: string,
     @Param('id') seshId: string,
-  ): Promise<any> {
+  ): Promise<SeshDto> {
     return this.seshService.rsvpForSesh(token, seshId);
   }
 
@@ -38,7 +52,17 @@ export class SeshController {
   declineRsvpForSesh(
     @Headers('token') token: string,
     @Param('id') seshId: string,
-  ): Promise<any> {
+  ): Promise<SeshDto> {
     return this.seshService.declineRsvpForSesh(token, seshId);
+  }
+
+  @Patch(':id')
+  @Role(ROLES.USER, ROLES.SUPER_ADMIN)
+  updateSesh(
+    @Headers('token') token: string,
+    @Param('id') seshId: string,
+    @Body() updatedSesh: PartialSeshDto,
+  ): Promise<SeshDto> {
+    return this.seshService.updateSesh(token, seshId, updatedSesh);
   }
 }
