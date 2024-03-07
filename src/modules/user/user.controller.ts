@@ -37,6 +37,12 @@ export class UserController {
     return this.userService.returnSpecificUser(id);
   }
 
+  @Role(ROLES.USER, ROLES.ADMIN, ROLES.SUPER_ADMIN)
+  @Get('validate-recipient/:email')
+  validateSeshRecipient(@Param('email') email: string): Promise<boolean> {
+    return this.userService.validateSeshRecipient(email);
+  }
+
   @Public()
   @Post('register')
   registerNewUser(@Body() credentials: Credentials): Promise<UserDto> {

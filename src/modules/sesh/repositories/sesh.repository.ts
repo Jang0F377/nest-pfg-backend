@@ -116,7 +116,6 @@ export class SeshRepository {
    * @param seshId The ID of the session being added.
    * @returns A promise that resolves when the session has been added to the sender's accepted pool.
    * @throws {RequestTimeoutException} If adding the session to the sender's accepted pool fails.
-   * @private
    */
   private async handleAddToSendersAcceptedPool(
     id: mongoose.Types.ObjectId,

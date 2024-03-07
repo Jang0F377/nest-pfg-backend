@@ -192,6 +192,7 @@ export class SeshService {
       throw new UnprocessableEntityException();
     }
   }
+
   async updateSesh(
     token: string,
     sesh: string,

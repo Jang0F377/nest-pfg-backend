@@ -2,13 +2,14 @@ version: '3.5'
 
 networks:
   pfg-network:
-    driver: bridge
+    name: pfg-network
 
 volumes:
   pfg-mongo-data:
 
 services:
   pfg-backend:
+    hostname: pfg-backend
     image: pfg-backend:latest
     container_name: pfg-backend
     depends_on:

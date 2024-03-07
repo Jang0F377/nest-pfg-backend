@@ -108,6 +108,14 @@ export class UserService {
     return foundUser;
   }
 
+  async validateSeshRecipient(email: string): Promise<boolean> {
+    const validUser = await this.userModel.findOne({ email: email });
+
+    if (!validUser) return false;
+
+    return true;
+  }
+
   /**
    * Logs in a user by validating their credentials and generating a JWT token.
    * @param credentials The user's login credentials.
