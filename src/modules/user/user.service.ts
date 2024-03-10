@@ -13,7 +13,7 @@ import mongoose, { Model } from 'mongoose';
 import { UserWithPassword } from './model/user-with-password.model';
 import { JwtService } from 'src/services/jwt/jwt.service';
 import { PartialUserDto, UserDto } from './dto/user.dto';
-import { UserProfile, Credentials } from 'src/types';
+import { UserProfile, Credentials, RegistrationObject } from 'src/types';
 import { UserWithPasswordDto } from './dto/user-with-password.dto';
 import {
   CONSTANT_PROJECTION,
@@ -97,10 +97,17 @@ export class UserService {
   /**
    * Retrieves a specific user by their ID.
    * @param id The user's ID.
+   * @param projections Optional fields to include in the response.
    * @returns The user's data.
    */
-  async returnSpecificUser(id: string): Promise<UserDto> {
-    const foundUser = await this.userModel.findById(id);
+  async returnSpecificUser(
+    id: string,
+    projections?: Array<string>,
+  ): Promise<UserDto> {
+    let foundUser: User | null = await this.userModel.findById(id);
+    if (projections) {
+      foundUser = await this.userModel.findById(id, projections);
+    }
 
     if (!foundUser) {
       throw new NotFoundException('User not found');
@@ -108,12 +115,12 @@ export class UserService {
     return foundUser;
   }
 
-  async validateSeshRecipient(email: string): Promise<boolean> {
+  async validateSeshRecipient(email: string): Promise<string | boolean> {
     const validUser = await this.userModel.findOne({ email: email });
 
     if (!validUser) return false;
 
-    return true;
+    return validUser._id;
   }
 
   /**
@@ -130,12 +137,14 @@ export class UserService {
 
   /**
    * Registers a new user in the database.
-   * @param credentials The user's registration credentials.
+   * @param registrationObject The user's registration credentials.
    * @returns The newly created user's data.
    */
-  async registerNewUser(credentials: Credentials): Promise<UserDto> {
+  async registerNewUser(
+    registrationObject: RegistrationObject,
+  ): Promise<UserDto> {
     const userExists = await this.userModel
-      .findOne({ email: credentials.email })
+      .findOne({ email: registrationObject.email })
       .exec();
 
     if (userExists) {
@@ -145,9 +154,10 @@ export class UserService {
     }
 
     const saveThisUser: UserWithPasswordDto = {
-      email: credentials.email,
+      email: registrationObject.email,
       password: '',
       role: ROLES.USER,
+      favoriteGames: registrationObject.favoriteGames,
     };
 
     if (saveThisUser.email === 'mjgarrett7092@gmail.com') {
@@ -155,7 +165,7 @@ export class UserService {
     }
 
     const hashedPwd = await this.hasherService.hashPassword(
-      credentials.password,
+      registrationObject.password,
     );
     saveThisUser.password = hashedPwd;
     const saveUserToDb = await this.userWithPassword.create(saveThisUser);
@@ -258,32 +268,6 @@ export class UserService {
     } catch {
       throw new UnprocessableEntityException();
     }
-  }
-
-  async updateFavoriteGames(
-    token: string,
-    favoriteGames: PartialUserDto,
-  ): Promise<UserDto> {
-    const { _id } = await this.returnCurrentUser(token);
-
-    if (!favoriteGames.favoriteGames) {
-      throw new NotAcceptableException();
-    }
-    // /* ROLE CHECK */
-    // if (role !== ROLES.ADMIN || ROLES.SUPER_ADMIN) {
-    //   /* If not (super)admin these changes are not allowed */
-    //   if (updatedUser.role || updatedUser.supporter) {
-    //     throw new UnauthorizedException(
-    //       'You are not authorized to make these changes!',
-    //     );
-    //   }
-    // }
-    const updated = await this.userModel.findByIdAndUpdate(
-      _id,
-      { $set: { favoriteGames: favoriteGames } },
-      { new: true },
-    );
-    return updated;
   }
 
   async resetUserDb(): Promise<Record<string, any>> {

@@ -70,10 +70,15 @@ export class SeshRepository {
     recipients: mongoose.Types.ObjectId[],
     sesh: SeshDto,
   ): Promise<SeshDto> {
+    let recipientObjectIds = [];
+    recipients.forEach((x) => {
+      const objectId = new mongoose.Types.ObjectId(x);
+      recipientObjectIds.push(objectId);
+    });
     let validatedRecipients: mongoose.Types.ObjectId[] = [];
     let setUsersUnconfirmed: mongoose.Types.ObjectId[] = [];
-    const results = recipients.map(async (recipient) => {
-      const user = await this.userService.getUserByEmail(
+    const results = recipientObjectIds.map(async (recipient) => {
+      const user = await this.userService.returnSpecificUser(
         recipient.toString(),
         USER_SESH_PROJECTION.concat(['-__v', '-email', '-role']),
       );

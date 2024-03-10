@@ -22,9 +22,8 @@ export class User extends Document {
 
   @Prop({
     type: Array,
-    default: [],
   })
-  favoriteGames?: Array<string>;
+  favoriteGames: Array<string>;
 
   @Prop({
     default: [],

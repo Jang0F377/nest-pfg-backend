@@ -15,6 +15,7 @@ import { JwtService } from './services/jwt/jwt.service';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ListenersModule } from './services/listeners/listeners.module';
 import { LoggerModule } from 'nestjs-pino';
+import { DateParserModule } from './services/date-parser/date-parser.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { LoggerModule } from 'nestjs-pino';
     SeshModule,
     PasswordHasherModule,
     ListenersModule,
+    DateParserModule,
   ],
   controllers: [HealthcheckController],
   providers: [JwtService, { provide: APP_GUARD, useClass: AuthGuard }],

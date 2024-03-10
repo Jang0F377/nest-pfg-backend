@@ -13,7 +13,7 @@ import { ROLES } from 'src/constants/user';
 import { PartialUserDto, UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 import { Public } from 'src/common/decorators/public.decorator';
-import { Credentials } from 'src/types';
+import { Credentials, RegistrationObject } from 'src/types';
 
 @Controller('users')
 export class UserController {
@@ -39,14 +39,18 @@ export class UserController {
 
   @Role(ROLES.USER, ROLES.ADMIN, ROLES.SUPER_ADMIN)
   @Get('validate-recipient/:email')
-  validateSeshRecipient(@Param('email') email: string): Promise<boolean> {
+  validateSeshRecipient(
+    @Param('email') email: string,
+  ): Promise<string | boolean> {
     return this.userService.validateSeshRecipient(email);
   }
 
   @Public()
   @Post('register')
-  registerNewUser(@Body() credentials: Credentials): Promise<UserDto> {
-    return this.userService.registerNewUser(credentials);
+  registerNewUser(
+    @Body() registrationObject: RegistrationObject,
+  ): Promise<UserDto> {
+    return this.userService.registerNewUser(registrationObject);
   }
 
   @Public()
@@ -61,7 +65,7 @@ export class UserController {
     @Headers('token') token: string,
     @Body() favoriteGames: PartialUserDto,
   ): Promise<UserDto> {
-    return this.userService.updateFavoriteGames(token, favoriteGames);
+    return;
   }
 
   @Role(ROLES.SUPER_ADMIN)

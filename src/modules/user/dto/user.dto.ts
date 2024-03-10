@@ -26,9 +26,8 @@ export class UserDto {
   @IsOptional()
   image?: string;
 
-  @IsOptional()
   @IsArray()
-  favoriteGames?: Array<string>;
+  favoriteGames: Array<string>;
 
   @IsOptional()
   @IsArray()
