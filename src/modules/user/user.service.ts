@@ -53,7 +53,7 @@ export class UserService {
       .populate({
         path: 'upcomingUndecidedSeshes upcomingAcceptedSeshes upcomingDeclinedSeshes recentSeshes',
         select:
-          'game proposedDay proposedTime recipients sentFrom usersConfirmed usersDeclined usersUnconfirmed',
+          'game proposedDay proposedTime recipients sentFrom usersConfirmed usersDeclined usersUnconfirmed _createdAt',
       })
       .exec();
 
@@ -143,6 +143,9 @@ export class UserService {
   async registerNewUser(
     registrationObject: RegistrationObject,
   ): Promise<UserDto> {
+    if (!registrationObject.favoriteGames) {
+      throw new BadRequestException('Please include 3 favorite games');
+    }
     const userExists = await this.userModel
       .findOne({ email: registrationObject.email })
       .exec();
