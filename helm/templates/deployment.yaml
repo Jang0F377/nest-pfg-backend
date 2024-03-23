@@ -51,13 +51,14 @@ spec:
             httpGet:
               path: /healthcheck
               port: {{ .Values.service.targetPort }}
-            initialDelaySeconds: 10
+            initialDelaySeconds: 15
             periodSeconds: 30
           readinessProbe:
             httpGet:
               path: /healthcheck
               port: {{ .Values.service.targetPort }}
-              periodSeconds: 60
+            initialDelaySeconds: 15
+            periodSeconds: 60
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
