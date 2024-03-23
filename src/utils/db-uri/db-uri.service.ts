@@ -6,7 +6,11 @@ import { ConfigServiceType, DbConfig } from 'src/constants/types/environment';
 export class DbUriService {
   constructor(private configService: ConfigService<ConfigServiceType>) {}
 
-  private connectionOptions = ['authSource=admin'];
+  private connectionOptions = [
+    'authSource=admin',
+    'replicaSet=mongodb',
+    'ssl=false',
+  ];
 
   public async returnDatabaseUri(): Promise<string> {
     const db = this.configService.get<DbConfig>('db');

@@ -17,15 +17,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: build
+      target: development
     command: npm run start:dev
     environment:
       - NODE_ENV=production
     networks:
       - pfg-network
     volumes:
-      - .:/app
-      - /app/node_modules
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     ports:
       - 3000:3000
     restart: unless-stopped
