@@ -21,7 +21,7 @@ export class DbUriService {
     const user = db.username;
     const pass = db.password;
     let uri: string;
-    this.logger.error('DB', db);
+    console.log('DB', db);
 
     if (user && pass) {
       uri = `mongodb://${user}:${pass}@${db.host}:${db.port}/${
@@ -30,7 +30,7 @@ export class DbUriService {
     } else {
       uri = `mongodb://${db.host}:${db.port}/${db.database}`;
     }
-    this.logger.error(uri);
+    console.log(uri);
     return uri;
   }
 }
