@@ -26,6 +26,7 @@ export class DbUriService {
     } else {
       uri = `mongodb://${db.host}:${db.port}/${db.database}`;
     }
+    console.log(uri);
     return uri;
   }
 }
