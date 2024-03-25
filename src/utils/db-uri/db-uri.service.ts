@@ -1,14 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PinoLogger } from 'nestjs-pino';
 import { ConfigServiceType, DbConfig } from 'src/constants/types/environment';
 
 @Injectable()
 export class DbUriService {
-  constructor(
-    private configService: ConfigService<ConfigServiceType>,
-    private readonly logger: Logger,
-  ) {}
+  constructor(private configService: ConfigService<ConfigServiceType>) {}
 
   private connectionOptions = [
     'authSource=admin',
@@ -21,7 +17,6 @@ export class DbUriService {
     const user = db.username;
     const pass = db.password;
     let uri: string;
-    console.log('DB', db);
 
     if (user && pass) {
       uri = `mongodb://${user}:${pass}@${db.host}:${db.port}/${
@@ -30,7 +25,6 @@ export class DbUriService {
     } else {
       uri = `mongodb://${db.host}:${db.port}/${db.database}`;
     }
-    console.log(uri);
     return uri;
   }
 }
