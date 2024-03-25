@@ -17,6 +17,7 @@ export class DbUriService {
     const user = db.username;
     const pass = db.password;
     let uri: string;
+    console.log(db);
 
     if (user && pass) {
       uri = `mongodb://${user}:${pass}@${db.host}:${db.port}/${

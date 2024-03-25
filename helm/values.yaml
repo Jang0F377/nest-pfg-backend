@@ -10,7 +10,7 @@ vars:
   MONGO_PORT: '27017'
   MONGO_USER: 'loopback'
   MONGO_PASSWORD: 'pass12345'
-  MONGO_DATABASE: 'pfg-main'
+  MONGO_DATABASE: 'mongodb-database'
   # MONGO_URI: 'mongodb://admin:pass12345@mongodb-0.mongodb-svc.default.svc.cluster.local:27017/admin?replicaSet=mongodb&ssl=false'
 
 imageCredentials:

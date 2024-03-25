@@ -44,6 +44,8 @@ spec:
               value: {{ .Values.vars.MONGO_USER | quote }}
             - name: "MONGO_PASSWORD"
               value: {{ .Values.vars.MONGO_PASSWORD | quote }}
+            - name: "MONGO_DATABASE"
+              value: {{ .Values.vars.MONGO_DATABASE | quote }}
           ports:
             - containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
