@@ -40,8 +40,8 @@ spec:
               value: {{ .Values.vars.MONGO_HOST | quote }}
             - name: "MONGO_PORT"
               value: {{ .Values.vars.MONGO_PORT | quote }}
-            - name: "MONGO_USER"
-              value: {{ .Values.vars.MONGO_USER | quote }}
+            - name: "MONGO_USERNAME"
+              value: {{ .Values.vars.MONGO_USERNAME | quote }}
             - name: "MONGO_PASSWORD"
               value: {{ .Values.vars.MONGO_PASSWORD | quote }}
             - name: "MONGO_DATABASE"
