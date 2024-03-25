@@ -27,8 +27,6 @@ import { DateParserModule } from './services/date-parser/date-parser.module';
     LoggerModule.forRoot({
       pinoHttp: {
         base: {
-          pid: undefined,
-          hostname: undefined,
           service: 'pfg-api-service',
         },
       },
