@@ -67,7 +67,7 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: pfg-backend.test
+    - host: pfg-backend.com
       paths:
         - path: /
           pathType: Prefix
