@@ -19,8 +19,9 @@
 
 #### Roadmap:
 
-1. Add Swagger/OpenAPI spec
+1. Finish Swagger/OpenAPI spec
 2. Add service/module for adding friends
+3. Switch Db to Postgres
 
 ```bash
 $ npm install
