@@ -8,6 +8,7 @@ variables:
 build-image:
   stage: build-image
   image: docker:latest
+  cache: []
   services:
     - docker:dind
   before_script:
