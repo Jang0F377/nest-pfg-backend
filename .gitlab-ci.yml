@@ -4,6 +4,7 @@ stages:
 
 variables:
   GL_BASE_IMAGE: 'registry.gitlab.com/jang0f377/nest-pfg-backend:latest'
+  GL_COMMON_IMAGES_REGISTRY: 'registry.gitlab.com/jang0f377/common-images'
 
 build-image:
   stage: build-image
@@ -12,6 +13,7 @@ build-image:
     - docker:dind
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $GL_COMMON_IMAGES_REGISTRY
     - docker buildx create --driver docker-container --name multi-arch --use
   script:
     - docker buildx build --platform linux/amd64,linux/arm64 --no-cache -t "$CI_REGISTRY_IMAGE:latest" .
