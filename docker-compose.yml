@@ -17,8 +17,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: development
+      target: build
     command: npm run start:dev
+    env_file: ./.env
     environment:
       - NODE_ENV=production
     networks:

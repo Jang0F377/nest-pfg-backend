@@ -8,8 +8,8 @@ export class DbUriService {
 
   private connectionOptions = [
     'authSource=admin',
-    'replicaSet=mongodb',
-    'ssl=false',
+    // 'replicaSet=mongodb',
+    // 'ssl=false',
   ];
 
   public async returnDatabaseUri(): Promise<string> {
