@@ -1,0 +1,17 @@
+stages:
+  - build-image
+  - push-image
+
+variables:
+  GL_BASE_IMAGE: 'registry.gitlab.com/jang0f377/nest-pfg-backend:latest'
+
+build-image:
+  stage: build-image
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - echo "$CI_REGISTRY_IMAGE"
+    - docker buildx build --platform linux/amd64,linux/arm64 --no-cache -t "$CI_REGISTRY_IMAGE:latest" .
