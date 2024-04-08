@@ -1,5 +1,3 @@
-version: '3.5'
-
 networks:
   pfg-network:
     name: pfg-network
