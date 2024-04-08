@@ -13,6 +13,11 @@ async function bootstrap() {
     .setTitle('PFG Sesh API')
     .setDescription('This is the API used to create and invite users to Seshes')
     .setVersion('0.1')
+    .addApiKey({
+      type: 'apiKey',
+      in: 'header',
+      name: 'token',
+    })
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

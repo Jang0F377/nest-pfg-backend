@@ -2,11 +2,11 @@ import { PartialType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import mongoose from 'mongoose';
-import { UserDto } from 'src/modules/user/dto/user.dto';
 
 export class SeshDto {
   @ApiProperty({
-    type: mongoose.Types.ObjectId,
+    type: String,
+    format: 'uuid',
     example: '65d39ec687e5cf09e433389f',
   })
   _id?: mongoose.Types.ObjectId;
@@ -27,8 +27,13 @@ export class SeshDto {
   proposedTime: string;
 
   @ApiProperty({
-    type: [mongoose.Types.ObjectId],
-    example: ['65d22cefa9d61389b181a5a9', '65d22c58a9d61389b181a59c'],
+    type: [String],
+    format: 'uuid',
+    example: [
+      '66143d8ae0946160fa97f83e',
+      '65d22c58a9d61389b181a59c',
+      '66143d99e0946160fa97f844',
+    ],
   })
   @IsNotEmpty({ message: 'recipients cannot be empty' })
   recipients: mongoose.Types.ObjectId[];
@@ -41,8 +46,12 @@ export class SeshDto {
   @IsNotEmpty({ message: 'sentFrom cannot be empty' })
   sentFrom: mongoose.Types.ObjectId;
 
-  @ApiProperty()
-  _createdAt?: number;
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    example: new Date().toISOString(),
+  })
+  _createdAt?: string;
 
   @ApiProperty({
     type: String,
@@ -51,13 +60,25 @@ export class SeshDto {
   })
   _updatedAt?: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: [String],
+    format: 'uuid',
+    example: ['66143d8ae0946160fa97f83e'],
+  })
   usersConfirmed?: mongoose.Types.ObjectId[];
 
-  @ApiProperty()
+  @ApiProperty({
+    type: [String],
+    format: 'uuid',
+    example: ['66143d99e0946160fa97f844'],
+  })
   usersDeclined?: mongoose.Types.ObjectId[];
 
-  @ApiProperty()
+  @ApiProperty({
+    type: [String],
+    format: 'uuid',
+    example: ['65d22cefa9d61389b181a5a9', '65d22c58a9d61389b181a59c'],
+  })
   usersUnconfirmed?: mongoose.Types.ObjectId[];
 }
 

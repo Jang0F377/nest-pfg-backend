@@ -12,14 +12,20 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { PartialSeshDto, SeshDto } from './dto/sesh.dto';
 import { Role } from 'src/common/decorators/role.decorator';
 import { ROLES } from 'src/constants/user';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Sesh')
 @Controller('sesh')
 export class SeshController {
   constructor(private seshService: SeshService) {}
 
   @Get(':id')
   @Public()
+  @ApiResponse({
+    status: 200,
+    type: SeshDto,
+    description: 'Get Sesh details by the Sesh Id',
+  })
   getSesh(@Param('id') id: string): Promise<SeshDto> {
     return this.seshService.getSesh(id);
   }
@@ -40,6 +46,11 @@ export class SeshController {
 
   @Post(':id/accept')
   @Role(ROLES.USER, ROLES.SUPER_ADMIN)
+  @ApiResponse({
+    status: 201,
+    type: SeshDto,
+    description: 'Successfully accepted the Sesh Invite.',
+  })
   rsvpForSesh(
     @Headers('token') token: string,
     @Param('id') seshId: string,
@@ -49,6 +60,11 @@ export class SeshController {
 
   @Post(':id/decline')
   @Role(ROLES.USER, ROLES.SUPER_ADMIN)
+  @ApiResponse({
+    status: 201,
+    type: SeshDto,
+    description: 'Successfully declined the Sesh Invite.',
+  })
   declineRsvpForSesh(
     @Headers('token') token: string,
     @Param('id') seshId: string,
@@ -58,6 +74,7 @@ export class SeshController {
 
   @Patch(':id')
   @Role(ROLES.USER, ROLES.SUPER_ADMIN)
+  @ApiExcludeEndpoint()
   updateSesh(
     @Headers('token') token: string,
     @Param('id') seshId: string,

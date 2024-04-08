@@ -24,8 +24,8 @@ export class Sesh extends Document {
   @Prop({ ref: 'User' })
   sentFrom: mongoose.Types.ObjectId;
 
-  @Prop({ required: false, default: Date.now() })
-  _createdAt?: number;
+  @Prop({ required: false, default: new Date().toISOString() })
+  _createdAt?: string;
 
   @Prop({ required: false })
   _updatedAt?: string;
