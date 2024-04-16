@@ -103,6 +103,24 @@ export class UserDto {
   upcomingDeclinedSeshes?: mongoose.Types.ObjectId[];
 
   @ApiProperty({
+    type: 'array',
+    items: {
+      type: 'string',
+      format: 'uuid',
+    },
+  })
+  friendRequests?: mongoose.Types.ObjectId[];
+
+  @ApiProperty({
+    type: 'array',
+    items: {
+      type: 'string',
+      format: 'uuid',
+    },
+  })
+  friends?: mongoose.Types.ObjectId[];
+
+  @ApiProperty({
     type: Boolean,
     default: false,
   })

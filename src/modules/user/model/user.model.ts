@@ -53,6 +53,18 @@ export class User extends Document {
   upcomingDeclinedSeshes?: mongoose.Types.ObjectId[];
 
   @Prop({
+    required: false,
+    default: [],
+  })
+  friendRequests?: mongoose.Types.ObjectId[];
+
+  @Prop({
+    required: false,
+    default: [],
+  })
+  friends?: mongoose.Types.ObjectId[];
+
+  @Prop({
     default: false,
   })
   supporter?: boolean;
