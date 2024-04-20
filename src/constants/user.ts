@@ -12,7 +12,7 @@ export const USER_SESH_PROJECTION = [
   '-upcomingAcceptedSeshes',
   '-upcomingDeclinedSeshes',
   '-upcomingUndecidedSeshes',
-  '-recentSeshes',
+  '-seshHistory',
   '-favoriteGames',
   '-supporter',
 ];

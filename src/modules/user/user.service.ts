@@ -51,7 +51,7 @@ export class UserService {
     const itsMe = await this.userModel
       .findById(sub, constantProjections)
       .populate({
-        path: 'upcomingUndecidedSeshes upcomingAcceptedSeshes upcomingDeclinedSeshes recentSeshes',
+        path: 'upcomingUndecidedSeshes upcomingAcceptedSeshes upcomingDeclinedSeshes seshHistory',
         select:
           'game proposedDay proposedTime recipients sentFrom usersConfirmed usersDeclined usersUnconfirmed _createdAt',
       })

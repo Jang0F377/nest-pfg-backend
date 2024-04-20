@@ -32,47 +32,6 @@ export class SeshController {
 
   @Post('create')
   @Role(ROLES.USER, ROLES.SUPER_ADMIN)
-  @ApiResponse({
-    status: 201,
-    type: 'object',
-    schema: {
-      properties: {
-        _id: {
-          type: 'string',
-          format: 'uuid',
-        },
-        game: {
-          type: 'string',
-        },
-        proposedDay: {
-          type: 'string',
-        },
-        proposedTime: {
-          type: 'string',
-        },
-        recipients: {
-          type: 'array',
-          items: {
-            type: 'string',
-            format: 'uuid',
-          },
-        },
-        sentFrom: {
-          type: 'string',
-          format: 'uuid',
-        },
-        _createdAt: {
-          type: 'string',
-          format: 'date-time',
-        },
-        _updatedAt: {
-          type: 'string',
-          format: 'date-time',
-        },
-      },
-    },
-    description: 'The Sesh has been successfully created.',
-  })
   createNewSesh(
     @Headers('token') token: string,
     @Body() sesh: SeshDto,

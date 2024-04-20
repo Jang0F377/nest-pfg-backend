@@ -11,12 +11,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Sesh } from '../model/sesh.model';
 import mongoose, { Model } from 'mongoose';
 import { USER_SESH_PROJECTION } from 'src/constants/user';
+import { DateParserService } from 'src/services/date-parser/date-parser.service';
 
 @Injectable()
 export class SeshRepository {
   constructor(
     @Inject(UserService) private userService: UserService,
     @InjectModel(Sesh.name) private seshModel: Model<Sesh>,
+    @Inject(DateParserService) private dateParserService: DateParserService,
   ) {}
 
   /**
@@ -43,8 +45,10 @@ export class SeshRepository {
     /* Set Sesh sentFrom to the creating User */
     sesh.sentFrom = user._id;
     sesh.usersConfirmed = [user._id];
+    /* Validate recipients */
     sesh = await this.validateRecipients(sesh);
-    // sesh = await this.dateParserService.parseDate(sesh);
+    /* Validate and determine day/date */
+    sesh = this.dateParserService.parseDate(sesh);
 
     try {
       const createdSesh = await this.seshModel.create(sesh);
