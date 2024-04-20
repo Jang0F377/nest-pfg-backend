@@ -67,7 +67,7 @@ export class UserDto {
   })
   @IsOptional()
   @IsArray()
-  recentSeshes?: mongoose.Types.ObjectId[];
+  seshHistory?: mongoose.Types.ObjectId[];
 
   @ApiProperty({
     type: 'array',

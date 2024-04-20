@@ -29,7 +29,7 @@ export class User extends Document {
     default: [],
     ref: 'Sesh',
   })
-  recentSeshes?: mongoose.Types.ObjectId[];
+  seshHistory?: mongoose.Types.ObjectId[];
 
   @Prop({
     required: false,

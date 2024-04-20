@@ -19,36 +19,10 @@
 
 #### Roadmap:
 
-1. Finish Swagger/OpenAPI spec
-2. Add service/module for adding friends
-3. Switch Db to Postgres
-
-```bash
-$ npm install
-```
-
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
+- Finish Swagger/OpenAPI spec
+- Implement service that will provide the date source of truth for each Sesh. Sesh date options currently include: 'today', 'tomorrow', or in date format 'MM/DD/YY' or 'MM/DD/YYYY'. The date format is easy enough to handle but if today/tomorrow are used, we need to put that into a validate-able date.
+- Implement service that checks db (maybe ~10 minutes) for seshs that have occurred (date-time in the past) & move them into the user's
+  seshHistory.
+- Implement comments on Sesh's.
+- Add service/module for adding friends
+- Switch Db to Postgres
