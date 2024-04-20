@@ -8,7 +8,7 @@
 
 - Typescript
 - Nest.JS
-- MongoDB
+- MongoDB/mongoose
 - bcryptjs & jsonwebtoken
 
 ### Info:
@@ -26,3 +26,14 @@
 - Implement comments on Sesh's.
 - Add service/module for adding friends
 - Switch Db to Postgres
+
+---
+
+### Check out the live site [here](http://my-home-project.us)
+
+> **NOTE:** If you want to log in to check it out feel free to make up credentials or use these credentials:
+>
+> - U: test@test.com
+> - P: pass12345
+
+### Check out the React.JS [Frontend](https://github.com/Jang0F377/PFG-Frontend)
