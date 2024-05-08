@@ -1,7 +1,8 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import mongoose from 'mongoose';
+import { SESH_STATUS } from 'src/constants/user';
 
 export class SeshDto {
   @ApiProperty({
@@ -80,6 +81,8 @@ export class SeshDto {
     example: ['65d22cefa9d61389b181a5a9', '65d22c58a9d61389b181a59c'],
   })
   usersUnconfirmed?: mongoose.Types.ObjectId[];
+
+  status?: SESH_STATUS;
 }
 
 export class PartialSeshDto extends PartialType(SeshDto) {}

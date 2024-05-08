@@ -24,6 +24,7 @@
     "docker:dev:build": "docker compose up -d --build"
   },
   "dependencies": {
+    "@hokify/agenda": "^6.3.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.0.0",

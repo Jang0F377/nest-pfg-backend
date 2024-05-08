@@ -46,7 +46,6 @@ export class DateParserService {
 
     return sesh;
   }
-
   private _verifyDate(date: Date): void {
     const future = isFuture(date);
     if (!future) {

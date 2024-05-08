@@ -53,7 +53,7 @@ export class UserService {
       .populate({
         path: 'upcomingUndecidedSeshes upcomingAcceptedSeshes upcomingDeclinedSeshes seshHistory',
         select:
-          'game proposedDay proposedTime recipients sentFrom usersConfirmed usersDeclined usersUnconfirmed _createdAt',
+          'game proposedDay proposedTime recipients sentFrom usersConfirmed usersDeclined usersUnconfirmed _createdAt status',
       })
       .exec();
 

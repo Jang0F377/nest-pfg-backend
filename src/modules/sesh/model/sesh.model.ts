@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { SESH_STATUS } from 'src/constants/user';
 import { User, UserSchema } from 'src/modules/user/model/user.model';
 
 @Schema()
@@ -41,6 +42,9 @@ export class Sesh extends Document {
 
   @Prop({ required: false, ref: 'User' })
   usersUnconfirmed?: mongoose.Types.ObjectId[];
+
+  @Prop({ required: false, default: SESH_STATUS.NOT_STARTED })
+  status?: SESH_STATUS;
 }
 
 export const SeshSchema = SchemaFactory.createForClass(Sesh);
