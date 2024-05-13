@@ -2,7 +2,7 @@ import { Agenda, Job } from '@hokify/agenda';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isSameHour } from 'date-fns';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { AGENDA_CONNECTION } from 'src/constants/agenda';
 import { SESH_STATUS } from 'src/constants/user';
 import { SeshDto } from 'src/modules/sesh/dto/sesh.dto';
@@ -43,6 +43,7 @@ export class AgendaService {
       console.log('Starting Agenda...');
       await this.agenda.start();
       await this._defineAgendaJobs();
+      await this._scheduleAgendaJobs();
     });
     this.agenda.on('error', (error: Error) => {
       console.log('Agenda ERR:', error);
@@ -53,6 +54,10 @@ export class AgendaService {
     this.agenda.define('checkSeshes', async () => {
       this._jobMoveSeshesToFinished();
     });
+  }
+
+  private async _scheduleAgendaJobs() {
+    this.agenda.every('1 minute', 'checkSeshes');
   }
 
   private _convertToMilitaryTime(time: string) {
@@ -83,11 +88,11 @@ export class AgendaService {
       const militaryTime = this._convertToMilitaryTime(seshTime);
       return time >= militaryTime;
     });
-    this._changeSeshStatus(pastSeshes);
-    this._moveToHistoryForAttendees(pastSeshes);
+    await this._moveToHistoryForAttendees(pastSeshes);
+    await this._changeSeshStatus(pastSeshes);
   }
 
-  private async _changeSeshStatus(seshes: SeshDto[]): Promise<void> {
+  private async _changeSeshStatus(seshes?: SeshDto[]): Promise<void> {
     seshes.forEach(async (sesh) => {
       await this.seshModel.findByIdAndUpdate(sesh._id, {
         $set: {
@@ -97,7 +102,80 @@ export class AgendaService {
     });
   }
 
-  private async _moveToHistoryForAttendees(seshes: SeshDto[]): Promise<void> {
-    console.log(this._moveToHistoryForAttendees.name, seshes);
+  private async _moveToHistoryForAttendees(seshes?: SeshDto[]): Promise<void> {
+    for (const sesh of seshes) {
+      const seshId = sesh._id;
+      const confirmedUsers = sesh.usersConfirmed.toString().split(',');
+      const unconfirmedUsers = sesh.usersUnconfirmed;
+      const declinedUsers = sesh.usersDeclined;
+
+      console.log('confirmed', confirmedUsers);
+      console.log('unconfirmed', unconfirmedUsers);
+      console.log('declined', declinedUsers);
+      console.log('declined', declinedUsers.length);
+      if (unconfirmedUsers.length) {
+        const unconfirmed = unconfirmedUsers.toString().split(',');
+        await this._removeFromUpcomingUndecided(seshId, unconfirmed);
+      }
+      if (declinedUsers.length) {
+        const declined = declinedUsers.toString().split(',');
+        await this._removeFromUpcomingDeclined(seshId, declined);
+      }
+      await this._moveToHistory(seshId, confirmedUsers);
+    }
+  }
+
+  private async _moveToHistory(
+    seshId: Types.ObjectId,
+    confirmedRecipients: string[],
+  ): Promise<void> {
+    try {
+      for (const user of confirmedRecipients) {
+        await this.userModel.findByIdAndUpdate(user, {
+          $pull: {
+            upcomingAcceptedSeshes: seshId,
+          },
+          $push: {
+            seshHistory: seshId,
+          },
+        });
+      }
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  private async _removeFromUpcomingUndecided(
+    seshId: Types.ObjectId,
+    undecidedRecipients?: string[],
+  ): Promise<void> {
+    try {
+      for (const user of undecidedRecipients) {
+        await this.userModel.findByIdAndUpdate(user, {
+          $pull: {
+            upcomingUndecidedSeshes: seshId,
+          },
+        });
+      }
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  private async _removeFromUpcomingDeclined(
+    seshId: Types.ObjectId,
+    declinedRecipients?: string[],
+  ): Promise<void> {
+    try {
+      for (const user of declinedRecipients) {
+        await this.userModel.findByIdAndUpdate(user, {
+          $pull: {
+            upcomingDeclinedSeshes: seshId,
+          },
+        });
+      }
+    } catch (err) {
+      throw new Error(err);
+    }
   }
 }
